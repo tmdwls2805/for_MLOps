@@ -1,0 +1,74 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+ENV/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual environments
+venv/
+env/
+ENV/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.claude/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Project specific - MLOps
+mlruns/
+models/checkpoint-*/
+logs/
+*.log
+
+# Large data files
+*.json
+!**/config.json
+!**/tokenizer.json
+!**/trainer_state.json
+!**/tokenizer_config.json
+!**/special_tokens_map.json
+
+# Model weights (very large)
+*.safetensors
+*.bin
+*.pt
+*.pth
+*.onnx
+
+# Hugging Face cache
+.cache/
+huggingface/
+
+# Data analysis outputs
+data/emotion_distribution.csv
+data/emotion_distribution.png
+
+# Temporary files
+*.tmp
+*.temp

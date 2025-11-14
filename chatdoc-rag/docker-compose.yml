@@ -1,0 +1,15 @@
+version: '3.8'
+
+services:
+  chatdoc:
+    build: .
+    container_name: chatdoc-rag
+    ports:
+      - "8000:8000"
+    volumes:
+      - ~/.cache/huggingface:/root/.cache/huggingface
+    mem_limit: 8g
+    mem_reservation: 6g
+    environment:
+      - PYTHONUNBUFFERED=1
+    restart: unless-stopped
