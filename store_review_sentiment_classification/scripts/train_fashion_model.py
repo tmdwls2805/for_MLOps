@@ -58,11 +58,22 @@ def tokenize(batch):
 
 # 5-1. 감정 분류 모델 학습 (polarity)
 print("\n=== 감정 분류 모델 학습 중 ===")
-sentiment_train = Dataset.from_pandas(train_df[["input_text", "polarity"]])
-sentiment_test = Dataset.from_pandas(test_df[["input_text", "polarity"]])
 
-sentiment_train = sentiment_train.rename_column("polarity", "labels")
-sentiment_test = sentiment_test.rename_column("polarity", "labels")
+# polarity 레이블 재매핑: -1(부정) -> 0, 0(중립) -> 1, 1(긍정) -> 2
+train_df["sentiment_label"] = train_df["polarity"].map({-1: 0, 0: 1, 1: 2})
+test_df["sentiment_label"] = test_df["polarity"].map({-1: 0, 0: 1, 1: 2})
+
+# 감정 레이블 매핑 저장
+sentiment_label_mapping = {0: "부정", 1: "중립", 2: "긍정"}
+with open("models/sentiment_label_mapping.json", "w", encoding="utf-8") as f:
+    json.dump(sentiment_label_mapping, f, ensure_ascii=False, indent=2)
+print(f"감정 레이블 매핑: {sentiment_label_mapping}")
+
+sentiment_train = Dataset.from_pandas(train_df[["input_text", "sentiment_label"]])
+sentiment_test = Dataset.from_pandas(test_df[["input_text", "sentiment_label"]])
+
+sentiment_train = sentiment_train.rename_column("sentiment_label", "labels")
+sentiment_test = sentiment_test.rename_column("sentiment_label", "labels")
 
 sentiment_train = sentiment_train.map(tokenize, batched=True)
 sentiment_test = sentiment_test.map(tokenize, batched=True)
@@ -73,14 +84,14 @@ sentiment_test = sentiment_test.remove_columns(["input_text"])
 sentiment_train.set_format("torch")
 sentiment_test.set_format("torch")
 
-sentiment_model = AutoModelForSequenceClassification.from_pretrained(model_name, num_labels=2)
+sentiment_model = AutoModelForSequenceClassification.from_pretrained(model_name, num_labels=3)
 
 sentiment_args = TrainingArguments(
     output_dir="./models/sentiment",
     evaluation_strategy="epoch",
     save_total_limit=1,
-    per_device_train_batch_size=100,
-    num_train_epochs=100,
+    per_device_train_batch_size=16,
+    num_train_epochs=3,
     logging_dir="./logs/sentiment",
     learning_rate=5e-5,
     no_cuda=not torch.cuda.is_available(),  # GPU 없으면 CPU 사용
